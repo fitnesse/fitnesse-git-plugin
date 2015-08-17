@@ -1,0 +1,84 @@
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+
+        }
+    }
+    test {
+        java {
+            srcDir 'test'
+        }
+    }
+}
+
+dependencies {
+    compile "org.eclipse.jgit:org.eclipse.jgit:3.6.2.201501210735-r"
+    compile "org.fitnesse:fitnesse:20150814"
+
+    testCompile "junit:junit:4.12"
+}
+
+task("writeFitNesseClasspath", type: WriteFitNesseClasspath) {
+    classpath = project.configurations.compile
+
+    pagePath = project.file("FitNesseRoot/GradleClasspath")
+}
+
+task run(type: JavaExec) {
+    dependsOn writeFitNesseClasspath
+    dependsOn compileJava
+    classpath configurations.compile
+    main "fitnesseMain.FitNesseMain"
+    args "-p", "8000", "-e", "0"
+}
+
+task intTest(type: JavaExec) {
+    dependsOn writeFitNesseClasspath
+    dependsOn compileJava
+    dependsOn test
+    classpath configurations.compile
+    main "fitnesseMain.FitNesseMain"
+    args "-c", "GitFileController?suite&format=text"
+}
+
+check.dependsOn intTest
+
+/// === Custom Tasks
+
+class WriteFitNesseClasspath extends DefaultTask {
+    @Input
+    def classpath
+
+    @OutputDirectory
+    File pagePath
+
+    @TaskAction
+    def generatePage() {
+        def contentTxt = project.file("${pagePath}/content.txt")
+        contentTxt.createNewFile()
+        contentTxt.withWriter { writer ->
+            writer.writeLine("!path ${project.sourceSets.main.output.classesDir}")
+            writer.writeLine("!path ${project.sourceSets.test.output.classesDir}")
+            classpath.each { d ->
+                writer.writeLine("!path $d")
+            }
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.6'
+}

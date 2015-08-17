@@ -1,0 +1,9 @@
+properties
+updateList
+updateDoNotCopyOverList
+ErrorLogs/*
+FitNesse/*
+files/testResults/*
+.svn
+.DS_Store
+desktop.ini

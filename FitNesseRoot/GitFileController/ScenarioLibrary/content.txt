@@ -1,0 +1,1 @@
+!include -seamless .FitNesse.SuiteAcceptanceTests.SuiteVersionsControllerTests.ScenarioLibrary
