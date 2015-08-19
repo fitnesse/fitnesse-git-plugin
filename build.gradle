@@ -1,8 +1,12 @@
 
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'maven'
-apply plugin: 'signing'
+
+plugins {
+    id 'java' // or 'groovy' Must be explicitly applied
+    id 'idea'
+    id 'maven'
+    id 'signing'
+    id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
 
 group = "org.fitnesse.plugins"
 archivesBaseName = "fitnesse-git-plugin"
@@ -16,14 +20,22 @@ repositories {
     }
 }
 
+configurations {
+    provided
+}
+
 sourceSets {
     main {
+        compileClasspath += configurations.provided
+        runtimeClasspath += configurations.provided
         java {
             srcDir 'src'
 
         }
     }
     test {
+        compileClasspath += configurations.provided
+        runtimeClasspath += configurations.provided
         java {
             srcDir 'test'
         }
@@ -32,13 +44,13 @@ sourceSets {
 
 dependencies {
     compile "org.eclipse.jgit:org.eclipse.jgit:3.6.2.201501210735-r"
-    compile "org.fitnesse:fitnesse:20150814"
+    provided "org.fitnesse:fitnesse:20150814"
 
     testCompile "junit:junit:4.12"
 }
 
 task("writeFitNesseClasspath", type: WriteFitNesseClasspath) {
-    classpath = project.configurations.compile
+    classpath = configurations.compile + configurations.provided
 
     pagePath = project.file("FitNesseRoot/GradleClasspath")
 }
@@ -46,7 +58,7 @@ task("writeFitNesseClasspath", type: WriteFitNesseClasspath) {
 task run(type: JavaExec) {
     dependsOn writeFitNesseClasspath
     dependsOn compileJava
-    classpath configurations.compile
+    classpath = configurations.compile + configurations.provided
     main "fitnesseMain.FitNesseMain"
     args "-p", "8000", "-e", "0"
 }
@@ -55,7 +67,7 @@ task intTest(type: JavaExec) {
     dependsOn writeFitNesseClasspath
     dependsOn compileJava
     dependsOn test
-    classpath configurations.compile
+    classpath = configurations.compile + configurations.provided
     main "fitnesseMain.FitNesseMain"
     args "-c", "GitFileController?suite&format=text"
 }
@@ -73,7 +85,7 @@ task sourcesJar(type: Jar) {
 }
 
 artifacts {
-    archives javadocJar, sourcesJar
+    archives javadocJar, sourcesJar, shadowJar
 }
 
 signing {
