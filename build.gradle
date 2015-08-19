@@ -44,7 +44,7 @@ sourceSets {
 
 dependencies {
     compile "org.eclipse.jgit:org.eclipse.jgit:3.6.2.201501210735-r"
-    provided "org.fitnesse:fitnesse:20150814"
+    provided "org.fitnesse:fitnesse:20150819-SNAPSHOT"
 
     testCompile "junit:junit:4.12"
 }
@@ -58,7 +58,7 @@ task("writeFitNesseClasspath", type: WriteFitNesseClasspath) {
 task run(type: JavaExec) {
     dependsOn writeFitNesseClasspath
     dependsOn compileJava
-    classpath = configurations.compile + configurations.provided
+    classpath = sourceSets.main.runtimeClasspath
     main "fitnesseMain.FitNesseMain"
     args "-p", "8000", "-e", "0"
 }
@@ -67,7 +67,7 @@ task intTest(type: JavaExec) {
     dependsOn writeFitNesseClasspath
     dependsOn compileJava
     dependsOn test
-    classpath = configurations.compile + configurations.provided
+    classpath = sourceSets.main.runtimeClasspath
     main "fitnesseMain.FitNesseMain"
     args "-c", "GitFileController?suite&format=text"
 }

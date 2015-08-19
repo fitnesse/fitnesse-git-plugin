@@ -20,7 +20,7 @@ public class GitFileVersionsControllerTest {
   public void setUp() throws GitAPIException {
     fixture = new VersionsControllerFixture(GitFileVersionsController.class.getCanonicalName());
     fixture.createWikiRoot();
-    fixture.initialiseGitRepository();
+    new GitVersionsControllerFixture().initialiseGitRepository();
   }
 
   @After
