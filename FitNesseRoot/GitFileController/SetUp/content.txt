@@ -7,6 +7,8 @@ First, make sure we start with a clean slate.
 !|Library|
 |versions controller fixture | fitnesse.wiki.fs.GitFileVersionsController |
 
-| script | 
+| script |
 | clean up |
+
+| script | GitVersionsControllerFixture |
 | initialise git repository |
