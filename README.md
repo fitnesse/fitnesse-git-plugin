@@ -1,5 +1,6 @@
 # FitNesse Git Version Controller
 
+[![maven central](https://maven-badges.herokuapp.com/maven-central/org.fitnesse.plugins/fitnesse-git-plugin/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/org.fitnesse.plugins/fitnesse-git-plugin)
 This project is a plugin mofule for FitNesse
 
 For those of us who fancy a more tight integration with their source control system there is a Git based version controller available. This version controller creates a commit for every page change. The `.RecentChanges` page can also be tailored to show the Git version history, instead of the default file based history.
