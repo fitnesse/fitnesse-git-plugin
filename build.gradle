@@ -10,7 +10,7 @@ plugins {
 
 group = "org.fitnesse.plugins"
 archivesBaseName = "fitnesse-git-plugin"
-version = "0.1"
+version = "1.0"
 
 
 repositories {
@@ -30,7 +30,6 @@ sourceSets {
         runtimeClasspath += configurations.provided
         java {
             srcDir 'src'
-
         }
     }
     test {
