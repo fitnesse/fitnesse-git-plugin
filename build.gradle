@@ -15,9 +15,6 @@ version = "1.0"
 
 repositories {
     mavenCentral()
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
 }
 
 configurations {
@@ -29,6 +26,9 @@ sourceSets {
         compileClasspath += configurations.provided
         runtimeClasspath += configurations.provided
         java {
+            srcDir 'src'
+        }
+        resources {
             srcDir 'src'
         }
     }
@@ -136,6 +136,11 @@ uploadArchives {
     }
 }
 
+idea {
+    module {
+        scopes.PROVIDED.plus += [ configurations.provided ]
+    }
+}
 
 /// === Custom Tasks
 
