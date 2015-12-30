@@ -6,6 +6,8 @@ This project is a plugin module for [FitNesse](http://fitnesse.org).
 
 For those of us who fancy a more tight integration with their source control system there is a Git based version controller available. This version controller creates a commit for every page change. The `.RecentChanges` page can also be tailored to show the Git version history, instead of the default file based history.
 
+The latest version is available from [Maven Central](https://maven-badges.herokuapp.com/maven-central/org.fitnesse.plugins/fitnesse-git-plugin). You can download the `fitnesse-git-plugin-X.Y-all.jar` file and place it in a directory named `plugins` next to your `FitNesseRoot`, or reference the plugin from a build tool.
+
 To configure the Git version controller, add the following to your plugins.propeties:
 
     VersionsController=fitnesse.wiki.fs.GitFileVersionsController
