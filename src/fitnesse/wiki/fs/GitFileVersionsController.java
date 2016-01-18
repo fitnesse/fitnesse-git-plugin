@@ -217,7 +217,7 @@ public class GitFileVersionsController implements VersionsController, RecentChan
   public static Repository getRepository(File file) {
     try {
       return new FileRepositoryBuilder()
-              .findGitDir(file)
+              .findGitDir(file.getCanonicalFile())
               .readEnvironment()
               .setMustExist(true)
               .build();

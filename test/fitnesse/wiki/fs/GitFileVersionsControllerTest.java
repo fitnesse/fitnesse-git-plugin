@@ -44,7 +44,6 @@ public class GitFileVersionsControllerTest {
     GitFileVersionsController versionsController = new GitFileVersionsController();
     WikiPage recentChanges = versionsController.toWikiPage(fixture.getRootPage());
     assertTrue(recentChanges.getData().getContent(), recentChanges.getData().getContent().startsWith("Unable to read history: "));
-   
   }
 
   @Test
