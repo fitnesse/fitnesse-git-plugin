@@ -101,7 +101,11 @@ public class GitFileVersionsController implements VersionsController, RecentChan
       return history(files[0], new LogCommandSpec() {
         public LogCommand specify(LogCommand log, Repository repository) {
           for (File file : files) {
-            log.addPath(getPath(file, repository));
+            try {
+              log.addPath(getPath(file, repository));
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
           }
           return log.setMaxCount(historyDepth);
         }
@@ -191,9 +195,9 @@ public class GitFileVersionsController implements VersionsController, RecentChan
   }
 
   // Paths we feed to Git should be relative to the git repo. Absolute paths are not appreciated.
-  private String getPath(File file, Repository repository) {
-    String workTreePath = repository.getWorkTree().getAbsolutePath();
-    String pagePath = file.getAbsolutePath();
+  private String getPath(File file, Repository repository) throws IOException {
+    String workTreePath = repository.getWorkTree().getCanonicalPath();
+    String pagePath = file.getCanonicalPath();
 
     assert pagePath.startsWith(workTreePath);
 
