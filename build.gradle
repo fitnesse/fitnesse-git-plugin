@@ -36,6 +36,9 @@ sourceSets {
     }
 }
 
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
+
 dependencies {
     compile "org.eclipse.jgit:org.eclipse.jgit:3.6.2.201501210735-r"
     provided "org.fitnesse:fitnesse:20160618"
