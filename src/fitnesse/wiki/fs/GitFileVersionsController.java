@@ -146,7 +146,7 @@ public class GitFileVersionsController implements VersionsController, RecentChan
   }
 
   @Override
-  public void delete(FileVersion... files) {
+  public void delete(FileVersion... files) throws IOException {
     Repository repository = getRepository(files[0].getFile());
     Git git = new Git(repository);
     try {

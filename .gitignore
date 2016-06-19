@@ -7,9 +7,9 @@ FitNesseRoot/PageHeader/
 FitNesseRoot/RecentChanges/
 FitNesseRoot/TemplateLibrary/
 TestDir/
-fitnesse-git-plugin.iml
-fitnesse-git-plugin.ipr
-fitnesse-git-plugin.iws
+*.iml
+*.ipr
+*.iws
 out/
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)

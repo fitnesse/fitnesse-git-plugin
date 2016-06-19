@@ -38,7 +38,7 @@ sourceSets {
 
 dependencies {
     compile "org.eclipse.jgit:org.eclipse.jgit:3.6.2.201501210735-r"
-    provided "org.fitnesse:fitnesse:20151230"
+    provided "org.fitnesse:fitnesse:20160618"
 
     testCompile "junit:junit:4.12"
 }

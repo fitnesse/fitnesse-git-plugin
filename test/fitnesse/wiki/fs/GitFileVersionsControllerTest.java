@@ -1,6 +1,7 @@
 package fitnesse.wiki.fs;
 
 import java.io.File;
+import java.io.IOException;
 
 import fitnesse.wiki.WikiPage;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -24,7 +25,7 @@ public class GitFileVersionsControllerTest {
   }
 
   @After
-  public void tearDown() {
+  public void tearDown() throws IOException {
     fixture.cleanUp();
   }
 
