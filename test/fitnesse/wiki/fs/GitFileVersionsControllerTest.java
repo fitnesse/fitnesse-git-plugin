@@ -18,8 +18,9 @@ public class GitFileVersionsControllerTest {
   private VersionsControllerFixture fixture;
 
   @Before
-  public void setUp() throws GitAPIException {
+  public void setUp() throws GitAPIException, IOException {
     fixture = new VersionsControllerFixture(GitFileVersionsController.class.getCanonicalName());
+    fixture.cleanUp();
     fixture.createWikiRoot();
     new GitVersionsControllerFixture().initialiseGitRepository();
   }
@@ -56,10 +57,8 @@ public class GitFileVersionsControllerTest {
 
     GitFileVersionsController versionsController = new GitFileVersionsController();
     WikiPage recentChanges = versionsController.toWikiPage(fixture.getRootPage());
-    System.out.println("###"+ recentChanges.getData().getContent() + "###");
-    String expected = "|[FitNesse] Updated files: TestDir/RooT/TestPage/content.txt and TestDir/RooT/TestPage/properties.xml.|";
-    expected = expected.replace("/", File.separator);
-    assertTrue("..." + recentChanges.getData().getContent() + "...", recentChanges.getData().getContent().startsWith(expected));
+    String expected = "|[FitNesse] Updated files: TestDir/RooT/TestPage.wiki.|".replace("/", File.separator);
+    assertTrue(String.format("Expected:\n%s\nActual:\n%s", expected, recentChanges.getData().getContent()), recentChanges.getData().getContent().startsWith(expected));
   }
 
   @Test

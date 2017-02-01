@@ -96,7 +96,7 @@ public class GitFileVersionsController implements VersionsController, RecentChan
   }
 
   @Override
-  public Collection<? extends VersionInfo> history(final File... files) {
+  public Collection<VersionInfo> history(final File... files) {
     try {
       return history(files[0], new LogCommandSpec() {
         public LogCommand specify(LogCommand log, Repository repository) {
@@ -115,12 +115,12 @@ public class GitFileVersionsController implements VersionsController, RecentChan
     }
   }
 
-  private Collection<GitVersionInfo> history(File file, LogCommandSpec logCommandSpec) throws GitAPIException{
+  private Collection<VersionInfo> history(File file, LogCommandSpec logCommandSpec) throws GitAPIException{
     Repository repository = getRepository(file);
     Git git = new Git(repository);
 
     Iterable<RevCommit> log = logCommandSpec.specify(git.log(), repository).call();
-    List<GitVersionInfo> versions = new ArrayList<GitVersionInfo>(historyDepth);
+    List<VersionInfo> versions = new ArrayList<>(historyDepth);
     for (RevCommit revCommit : log) {
       versions.add(makeVersionInfo(revCommit));
     }
@@ -146,16 +146,16 @@ public class GitFileVersionsController implements VersionsController, RecentChan
   }
 
   @Override
-  public void delete(FileVersion... files) throws IOException {
-    Repository repository = getRepository(files[0].getFile());
+  public void delete(File... files) throws IOException {
+    Repository repository = getRepository(files[0]);
     Git git = new Git(repository);
     try {
       RmCommand remover = git.rm();
-      for (FileVersion fileVersion : files) {
-        remover.addFilepattern(getPath(fileVersion.getFile(), repository));
+      for (File file : files) {
+        remover.addFilepattern(getPath(file, repository));
       }
       remover.call();
-      commit(git, String.format("[FitNesse] Deleted files: %s.", formatFileVersions(files)), files[0].getAuthor());
+      commit(git, String.format("[FitNesse] Deleted files: %s.", formatFiles(files)), null);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -187,7 +187,7 @@ public class GitFileVersionsController implements VersionsController, RecentChan
   private void commit(Git git, String message, String author) throws GitAPIException {
     Status status = git.status().call();
     if (!status.getAdded().isEmpty() || !status.getChanged().isEmpty() || !status.getRemoved().isEmpty()) {
-      if (author==null)
+      if (author == null)
         author = "";
       // set the commit author (if given) but ignores the email
       git.commit().setAuthor(author, "").setMessage(message).call();
@@ -237,37 +237,29 @@ public class GitFileVersionsController implements VersionsController, RecentChan
 
   @Override
   public WikiPage toWikiPage(WikiPage root) {
-    FileSystemPage fsPage = (FileSystemPage) root;
-    WikiPage recentChangesPage = createInMemoryRecentChangesPage(fsPage);
-    PageData pageData = recentChangesPage.getData();
+    FileBasedWikiPage fsPage = (FileBasedWikiPage) root;
+    String content;
     try {
-      pageData.setContent(convertToWikiText(history(fsPage.getFileSystemPath(), new LogCommandSpec() {
+      content = convertToWikiText(history(fsPage.getFileSystemPath(), new LogCommandSpec() {
         @Override
         public LogCommand specify(LogCommand log, Repository repository) {
           return log.setMaxCount(RECENT_CHANGES_DEPTH);
         }
-      })));
+      }));
     } catch (GitAPIException e) {
-      pageData.setContent("Unable to read history: " + e.getMessage());
+      content = "Unable to read history: " + e.getMessage();
     }
-    // No properties, no features.
-    pageData.setProperties(new WikiPageProperties());
-    recentChangesPage.commit(pageData);
-    return recentChangesPage;
+    return new GitRecentChangesPage(RecentChanges.RECENT_CHANGES, root,
+            new PageData(content, new WikiPageProperties()));
   }
 
-  private WikiPage createInMemoryRecentChangesPage(FileSystemPage parent) {
-    MemoryFileSystem fileSystem = new MemoryFileSystem();
-    return new FileSystemPage(new File(parent.getFileSystemPath(), RecentChanges.RECENT_CHANGES), RecentChanges.RECENT_CHANGES, parent, new MemoryVersionsController(fileSystem));
-  }
-
-  private String convertToWikiText(Collection<GitVersionInfo> history) {
+  private String convertToWikiText(Collection<VersionInfo> history) {
     final SimpleDateFormat dateFormat = new SimpleDateFormat(FitNesseContext.recentChangesDateFormat);
     StringBuilder builder = new StringBuilder(1024);
 
-    for (GitVersionInfo versionInfo : history) {
+    for (VersionInfo versionInfo : history) {
       builder.append("|")
-              .append(versionInfo.getComment())
+              .append(((GitVersionInfo) versionInfo).getComment())
               .append("|")
               .append(versionInfo.getAuthor())
               .append("|")
