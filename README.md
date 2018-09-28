@@ -8,7 +8,7 @@ For those of us who fancy a more tight integration with their source control sys
 
 The latest version is available from [Maven Central](https://maven-badges.herokuapp.com/maven-central/org.fitnesse.plugins/fitnesse-git-plugin). You can download the `fitnesse-git-plugin-X.Y-all.jar` file and place it in a directory named `plugins` next to your `FitNesseRoot`, or reference the plugin from a build tool.
 
-To configure the Git version controller, add the following to your plugins.propeties:
+To configure the Git version controller, add the following to your plugins.properties:
 
     VersionsController=fitnesse.wiki.fs.GitFileVersionsController
     RecentChanges=fitnesse.wiki.fs.GitFileVersionsController
