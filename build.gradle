@@ -40,7 +40,7 @@ sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
 dependencies {
-    compile "org.eclipse.jgit:org.eclipse.jgit:3.6.2.201501210735-r" // 4.6.0.201612231935-r
+    compile "org.eclipse.jgit:org.eclipse.jgit:4.11.3.201809181037-r"
     provided "org.fitnesse:fitnesse:20161106"
 
     testCompile "junit:junit:4.12"
