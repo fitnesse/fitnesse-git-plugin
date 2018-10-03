@@ -39,8 +39,16 @@ public class GitFileVersionsController implements VersionsController, RecentChan
 
   private final int historyDepth;
 
+  private String commitMessagePrefix = "[FitNesse]";
+
   public GitFileVersionsController(Properties properties) {
     this(getVersionDays(properties));
+
+    // Allow user to set commit messge prefix through config.
+    String prefix = properties.getProperty("GitFileVersionsController.commitMessagePrefix");
+    if (prefix != null) {
+      this.commitMessagePrefix = prefix;
+    }
   }
 
   public GitFileVersionsController(int historyDepth) {
@@ -138,7 +146,7 @@ public class GitFileVersionsController implements VersionsController, RecentChan
         adder.addFilepattern(getPath(fileVersion.getFile(), repository));
       }
       adder.call();
-      commit(git, String.format("[FitNesse] Updated files: %s.", formatFileVersions(fileVersions)), fileVersions[0].getAuthor());
+      commit(git, String.format(commitMessagePrefix + " Updated files: %s.", formatFileVersions(fileVersions)), fileVersions[0].getAuthor());
     } catch (GitAPIException e) {
       throw new IOException("Unable to commit changes", e);
     }
@@ -155,7 +163,7 @@ public class GitFileVersionsController implements VersionsController, RecentChan
         remover.addFilepattern(getPath(file, repository));
       }
       remover.call();
-      commit(git, String.format("[FitNesse] Deleted files: %s.", formatFiles(files)), null);
+      commit(git, String.format(commitMessagePrefix + " Deleted files: %s.", formatFiles(files)), null);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -287,7 +295,7 @@ public class GitFileVersionsController implements VersionsController, RecentChan
       git.rm()
               .addFilepattern(getPath(oldFile, repository))
               .call();
-      commit(git, String.format("[FitNesse] Renamed file %s to %s.", oldFile.getPath(), renameTo.getPath()), fileVersion.getAuthor());
+      commit(git, String.format(commitMessagePrefix + " Renamed file %s to %s.", oldFile.getPath(), renameTo.getPath()), fileVersion.getAuthor());
     } catch (GitAPIException e) {
       throw new RuntimeException(e);
     }
