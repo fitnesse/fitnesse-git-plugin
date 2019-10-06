@@ -59,4 +59,9 @@ At this point there are no properties apart from the ones mentioned above.
 
 There is currently no way to modify the commit message. PR's are welcome :)
 
+### How do I control the author's name and eMail for a commit?
+
+If the environment properties `AUTHOR_NAME` and `AUTHOR_EMAIL` are set, these values are taken for the commit. If these values are unset, the default is `FITNESSE` and `fitnesse@fitnesse.org`.
+
+
 
