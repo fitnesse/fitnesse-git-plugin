@@ -1,28 +1,20 @@
 package fitnesse.wiki.fs;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
-import fitnesse.wiki.VersionInfo;
 import fitnesse.wiki.WikiPage;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.util.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import java.io.File;
+import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public class GitFileVersionsControllerTest {
 
-  public static final String GIT_TEST_DIR = "src/test/resources/simple/";
   private VersionsControllerFixture fixture;
 
   @Before
