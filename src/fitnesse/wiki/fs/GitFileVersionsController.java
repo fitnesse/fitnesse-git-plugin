@@ -34,6 +34,10 @@ import java.util.Properties;
 public class GitFileVersionsController implements VersionsController, RecentChanges {
 
   private static final int RECENT_CHANGES_DEPTH = 100;
+  private static final String AUTHOR_NAME_KEY = "AUTHOR_NAME";
+  private static final String AUTHOR_EMAIL_KEY = "AUTHOR_EMAIL";
+  private static final String DEFAULT_AUTHOR_NAME = "Fitnesse";
+  private static final String DEFAULT_AUTHOR_EMAIL = "fitnesse@fitnesse.org";
 
   private final SimpleFileVersionsController persistence;
 
@@ -64,20 +68,19 @@ public class GitFileVersionsController implements VersionsController, RecentChan
     if (label == null) {
       return persistence.getRevisionData(null, files);
     }
-    RevCommit revCommit;
     Repository repository = getRepository(files[0]);
     FileVersion[] versions = new FileVersion[files.length];
 
     try {
       ObjectId rev = repository.resolve(label);
       RevWalk walk = new RevWalk(repository);
-      revCommit = walk.parseCommit(rev);
+      RevCommit revCommit = walk.parseCommit(rev);
       PersonIdent author = revCommit.getAuthorIdent();
       int counter = 0;
       for (File file : files) {
         String path = getPath(file, repository);
         byte[] content = getRepositoryContent(repository, revCommit, path);
-        versions[counter++] = new GitFileVersion(file, content, author.getName(), author.getWhen());
+        versions[counter++] = new GitFileVersion(file, content, author.getWhen());
       }
     } catch (IOException e) {
       throw new RuntimeException("Unable to get data for revision " + label, e);
@@ -138,7 +141,7 @@ public class GitFileVersionsController implements VersionsController, RecentChan
         adder.addFilepattern(getPath(fileVersion.getFile(), repository));
       }
       adder.call();
-      commit(git, String.format("[FitNesse] Updated files: %s.", formatFileVersions(fileVersions)), fileVersions[0].getAuthor());
+      commit(git, String.format("[FitNesse] Updated files: %s.", formatFileVersions(fileVersions)));
     } catch (GitAPIException e) {
       throw new IOException("Unable to commit changes", e);
     }
@@ -155,7 +158,7 @@ public class GitFileVersionsController implements VersionsController, RecentChan
         remover.addFilepattern(getPath(file, repository));
       }
       remover.call();
-      commit(git, String.format("[FitNesse] Deleted files: %s.", formatFiles(files)), null);
+      commit(git, String.format("[FitNesse] Deleted files: %s.", formatFiles(files)));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -184,14 +187,20 @@ public class GitFileVersionsController implements VersionsController, RecentChan
     return builder.toString();
   }
 
-  private void commit(Git git, String message, String author) throws GitAPIException {
+  private void commit(Git git, String message) throws GitAPIException {
     Status status = git.status().call();
     if (!status.getAdded().isEmpty() || !status.getChanged().isEmpty() || !status.getRemoved().isEmpty()) {
-      if (author == null)
-        author = "";
       // set the commit author (if given) but ignores the email
-      git.commit().setAuthor(author, "").setMessage(message).call();
+      git.commit().setAuthor(getAuthorName(), getAuthorEMail()).setMessage(message).call();
     }
+  }
+
+  private String getAuthorName() {
+    return System.getProperty(AUTHOR_NAME_KEY, DEFAULT_AUTHOR_NAME);
+  }
+
+  private String getAuthorEMail() {
+    return System.getProperty(AUTHOR_EMAIL_KEY, DEFAULT_AUTHOR_EMAIL);
   }
 
   // Paths we feed to Git should be relative to the git repo. Absolute paths are not appreciated.
@@ -287,7 +296,7 @@ public class GitFileVersionsController implements VersionsController, RecentChan
       git.rm()
               .addFilepattern(getPath(oldFile, repository))
               .call();
-      commit(git, String.format("[FitNesse] Renamed file %s to %s.", oldFile.getPath(), renameTo.getPath()), fileVersion.getAuthor());
+      commit(git, String.format("[FitNesse] Renamed file %s to %s.", oldFile.getPath(), renameTo.getPath()));
     } catch (GitAPIException e) {
       throw new RuntimeException(e);
     }
@@ -307,16 +316,14 @@ public class GitFileVersionsController implements VersionsController, RecentChan
     }
   }
 
-  private static class GitFileVersion implements FileVersion {
+  public static class GitFileVersion implements FileVersion {
     private final File file;
     private final byte[] content;
-    private final String author;
     private final Date lastModified;
 
-    public GitFileVersion(File file, byte[] content, String author, Date modified) {
+    public GitFileVersion(File file, byte[] content, Date modified) {
       this.file = file;
       this.content = content;
-      this.author = author;
       this.lastModified = modified;
     }
 
@@ -332,7 +339,7 @@ public class GitFileVersionsController implements VersionsController, RecentChan
 
     @Override
     public String getAuthor() {
-      return author;
+      return null;
     }
 
     @Override
