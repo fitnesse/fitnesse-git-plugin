@@ -5,7 +5,7 @@ plugins {
     id 'idea'
     id 'maven'
     id 'signing'
-    id 'com.github.johnrengelman.shadow' version '1.2.2'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
 }
 
 repositories {
