@@ -2,6 +2,8 @@
 
 [![maven central](https://maven-badges.herokuapp.com/maven-central/org.fitnesse.plugins/fitnesse-git-plugin/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/org.fitnesse.plugins/fitnesse-git-plugin)
 
+As the above badge shows, the latest release is 1.2.0, dating back to February 2017 - can you please crete a new release? See the PR for the reason.
+
 This project is a plugin module for [FitNesse](http://fitnesse.org).
 
 For those of us who fancy a more tight integration with their source control system there is a Git based version controller available. This version controller creates a commit for every page change. The `.RecentChanges` page can also be tailored to show the Git version history, instead of the default file based history.
